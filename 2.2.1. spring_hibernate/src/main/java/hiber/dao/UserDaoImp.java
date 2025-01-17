@@ -20,10 +20,12 @@ public class UserDaoImp implements UserDao {
       sessionFactory.getCurrentSession().save(user);
    }
 
-   @Override
+
    //@SuppressWarnings("unchecked")
+   @Override
    public List<User> listUsers() {
-      TypedQuery<User> query = sessionFactory.getCurrentSession().createQuery("from User");
+      TypedQuery<User> query = sessionFactory.getCurrentSession()
+              .createQuery("SELECT u FROM User u LEFT JOIN FETCH u.car", User.class);
       return query.getResultList();
    }
 
@@ -31,7 +33,7 @@ public class UserDaoImp implements UserDao {
    public User findUserByCar(String model, int series) {
       try {
          TypedQuery<User> query = sessionFactory.getCurrentSession()
-                 .createQuery("SELECT u FROM User u WHERE u.car.model = :model AND u.car.series = :series", User.class);
+                 .createQuery("SELECT u FROM User u JOIN FETCH u.car c WHERE c.model = :model AND c.series = :series", User.class);
          query.setParameter("model", model);
          query.setParameter("series", series);
          return query.getSingleResult();
